@@ -1,0 +1,32 @@
+# This workflow will  
+
+name: Publish
+
+on:
+  push:
+    branches: main
+jobs:
+  publish-gpr:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure Nodejs v${{matrix.node-version}}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{matrix.node-version}}
+          registry-url: https://npm.pkg.github.com/
+          #cache: 'pnpm'
+          scope: '@kthrob'
+      - name: NPM install
+        run: npm i
+      - name: Publish to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
